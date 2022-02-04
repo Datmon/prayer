@@ -4,4 +4,6 @@ export type RootStackParamList = {
   Details: undefined;
   MyPrayers: undefined;
   Subscribed: undefined;
+  SignIn: undefined;
+  SignUp: undefined;
 };

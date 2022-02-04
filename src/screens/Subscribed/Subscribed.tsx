@@ -1,6 +1,7 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
+import { RootStackParamList } from '../../types';
 
 const Subscribed = ({
   navigation,
