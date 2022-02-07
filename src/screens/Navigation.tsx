@@ -1,10 +1,4 @@
-import {
-  Alert,
-  Button,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { Alert, Button, StyleSheet, Text } from 'react-native';
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -18,22 +12,16 @@ import SignUp from './Auth/SignUp';
 import { useSelector } from 'react-redux';
 import { actions, selectors } from 'store';
 import { useDispatch } from 'react-redux';
-import ClickableText from '../components/ClickableText/ClickableText';
 import Settings from 'assests/svg/Settings';
 import TopBarButton from 'components/TopBarButton';
 import { StorageService } from 'services';
 import axios from 'axios';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from 'types';
 
 const TaskStack = createMaterialTopTabNavigator();
 
 const HomeStack = createStackNavigator();
-
-const Main = () => (
-  <TaskStack.Navigator>
-    <TaskStack.Screen name="MyPrayers" component={MyPrayers} />
-    <TaskStack.Screen name="Subscribed" component={Subscribed} />
-  </TaskStack.Navigator>
-);
 
 const Navigation = () => {
   const dispatch = useDispatch();
@@ -47,6 +35,14 @@ const Navigation = () => {
   const getToken = async () => {
     const token = await StorageService.getAssessToken();
     if (token) {
+      axios.defaults.headers.common.Authorization = 'Bearer ' + token;
+    } else {
+      axios.defaults.headers.common.Authorization = false;
+      /*if setting null does not remove `Authorization` header then try
+          delete axios.defaults.headers.common['Authorization'];
+        */
+    }
+    if (token) {
       dispatch(actions.auth.setAccessToken(token));
     }
     console.log('getToken: ', token);
@@ -56,27 +52,54 @@ const Navigation = () => {
     getToken();
   }, []);
 
-  useEffect(() => {
-    if (accessToken) {
-      axios.defaults.headers.common.Authorization = 'Bearer ' + accessToken;
-    } else {
-      axios.defaults.headers.common.Authorization = false;
-      /*if setting null does not remove `Authorization` header then try
-          delete axios.defaults.headers.common['Authorization'];
-        */
-    }
-  }, [accessToken]);
+  const Main = ({
+    route,
+  }: NativeStackScreenProps<RootStackParamList, 'Main'>) => (
+    <TaskStack.Navigator
+      sceneContainerStyle={{
+        backgroundColor: '#FFFFFF',
+      }}>
+      <TaskStack.Screen
+        name="MyPrayers"
+        component={MyPrayers}
+        initialParams={{
+          title: route.params.title,
+          columnId: route.params.columnId,
+        }}
+      />
+      <TaskStack.Screen
+        name="Subscribed"
+        component={Subscribed}
+        initialParams={{
+          title: route.params.title,
+          columnId: route.params.columnId,
+        }}
+      />
+    </TaskStack.Navigator>
+  );
 
   return !accessToken ? (
     <NavigationContainer>
-      <HomeStack.Navigator initialRouteName="SignIn">
+      <HomeStack.Navigator
+        initialRouteName="SignIn"
+        screenOptions={{
+          cardStyle: {
+            backgroundColor: '#FFFFFF',
+          },
+        }}>
         <HomeStack.Screen name="SignIn" component={SignIn} />
         <HomeStack.Screen name="SignUp" component={SignUp} />
       </HomeStack.Navigator>
     </NavigationContainer>
   ) : (
     <NavigationContainer>
-      <HomeStack.Navigator initialRouteName="MyDesk">
+      <HomeStack.Navigator
+        initialRouteName="MyDesk"
+        screenOptions={{
+          cardStyle: {
+            backgroundColor: '#FFFFFF',
+          },
+        }}>
         <HomeStack.Screen
           name="MyDesk"
           component={MyDesk}
@@ -92,15 +115,15 @@ const Navigation = () => {
         <HomeStack.Screen
           name="Main"
           component={Main}
-          options={{
-            title: 'To do',
+          options={({ route }: any) => ({
+            title: route.params.title,
             headerBackTitle: ' ',
             headerRight: () => (
               <TopBarButton onPress={() => Alert.alert('Settings')}>
                 <Settings />
               </TopBarButton>
             ),
-          }}
+          })}
         />
         <HomeStack.Screen
           name="Details"

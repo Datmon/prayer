@@ -49,6 +49,8 @@ const SignIn = ({
                   autoComplete="email"
                   textContentType="emailAddress"
                   secureTextEntry={false}
+                  style={styles.input}
+                  auth
                 />
               )}
             </Field>
@@ -63,6 +65,8 @@ const SignIn = ({
                   placeholder="Password"
                   autoComplete="password"
                   textContentType="password"
+                  style={styles.input}
+                  auth
                 />
               )}
             </Field>
@@ -83,4 +87,8 @@ const SignIn = ({
 
 export default SignIn;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  input: {
+    marginTop: 10,
+  },
+});

@@ -43,7 +43,6 @@ export const reducer = createReducer(
   {
     user: {} as User,
     signingInStatus: 'idle',
-    signUpStatus: 'idle',
   },
   builder => {
     builder.addCase(setAccessToken, (state, action) => {

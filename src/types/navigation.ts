@@ -1,9 +1,9 @@
 export type RootStackParamList = {
   MyDesk: undefined;
-  Main: undefined;
+  Main: { title: string; columnId: number };
   Details: undefined;
-  MyPrayers: undefined;
-  Subscribed: undefined;
+  MyPrayers: { title: string; columnId: number };
+  Subscribed: { title: string; columnId: number };
   SignIn: undefined;
   SignUp: undefined;
 };

@@ -12,6 +12,7 @@ interface Input {
   secureTextEntry?: boolean;
   textContentType: TextInputIOSProps['textContentType'];
   autoComplete: TextInputAndroidProps['autoComplete'];
+  auth?: boolean;
   style?: any;
 }
 
@@ -23,6 +24,7 @@ const Input = ({
   textContentType,
   input,
   meta,
+  auth,
 }: FieldRenderProps<string, any> & Input) => {
   return (
     // @ts-ignore
@@ -36,6 +38,7 @@ const Input = ({
       secureTextEntry={secureTextEntry}
       style={[
         styles.regular,
+        auth && styles.auth,
         style,
         {
           borderColor: meta && meta.error && meta.touched ? 'red' : '#E2E8F0',
@@ -49,9 +52,7 @@ export default Input;
 
 const styles = StyleSheet.create({
   regular: {
-    borderWidth: 1,
     fontSize: 20,
-    padding: 10,
-    borderRadius: 5,
   },
+  auth: { borderWidth: 1, padding: 10, borderRadius: 5 },
 });

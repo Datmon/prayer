@@ -1,3 +1,4 @@
 import * as auth from './auth';
 import * as columns from './columns';
-export { auth, columns };
+import * as prayers from './prayers';
+export { auth, columns, prayers };

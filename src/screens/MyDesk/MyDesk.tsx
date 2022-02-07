@@ -6,52 +6,52 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'types';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions, selectors } from 'store';
 
-const Card = ({ onPress, title }: { onPress: () => void; title: string }) => (
-  <TouchableOpacity onPress={onPress} style={styles.card}>
-    <Text style={styles.text}>{title}</Text>
-  </TouchableOpacity>
-);
-
 const MyDesk = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'MyDesk'>) => {
-  //const columns = useSelector(selectors.auth.selectUserColumns);
+  const [isLoading, setIsLoading] = useState(false);
+
   const columns = useSelector(selectors.columns.selectColumns);
+  const accessToken = useSelector(selectors.auth.selectAccessToken);
 
   const dispatch = useDispatch();
 
   const getColumns = async () => {
-    await dispatch(actions.columns.getColumns());
+    setIsLoading(true);
+    const res = await dispatch(actions.columns.getColumns());
+    console.log('getting columns', res);
+    setIsLoading(false);
   };
 
+  const Card = ({ title, columnId }: { title: string; columnId: number }) => (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('Main', { title, columnId })}
+      style={styles.card}>
+      <Text style={styles.text}>{title}</Text>
+    </TouchableOpacity>
+  );
+
   useEffect(() => {
-    getColumns();
-  }, []);
+    if (accessToken) {
+      getColumns();
+    }
+  }, [accessToken]);
 
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        {columns &&
+        {!isLoading &&
+          columns[0] &&
           columns.map(column => (
-            <Card
-              title={column.title}
-              key={column.id}
-              onPress={() => {
-                ('');
-              }}
-            />
+            <Card title={column.title} key={column.id} columnId={column.id} />
           ))}
-        <Button title="Go to TODO" onPress={() => navigation.push('Main')} />
-        <Button
-          title="Get columns"
-          onPress={() => console.log('columns', columns)}
-        />
+        <Button title="Get columns" onPress={() => getColumns()} />
       </View>
     </SafeAreaView>
   );
