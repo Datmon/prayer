@@ -21,37 +21,10 @@ const getColumns = createAsyncThunk('columns/getColumns', async () => {
   }
 });
 
-const postColumnPrayer = createAsyncThunk(
-  'column/postPrayer',
-  async ({
-    columnId,
-    body,
-  }: {
-    columnId: number;
-    body: {
-      title: string;
-      checked: boolean;
-      description: string;
-    };
-  }) => {
-    try {
-      const response = await columns.postColumnPrayer(columnId, body);
-      if (response.data.message) {
-        throw new Error(response.data.message);
-      }
-      console.log('response.data', response.data);
-      return response.data;
-    } catch (err) {
-      return err;
-    }
-  },
-);
-
 export const reducer = createReducer(
   {
     columns: [] as Array<Colums>,
     getColumnsStatus: 'idle',
-    getPrayersStatus: 'idle',
   },
   builder => {
     builder
@@ -65,23 +38,11 @@ export const reducer = createReducer(
       .addCase(getColumns.rejected, state => {
         state.getColumnsStatus = 'rejected';
       });
-
-    builder
-      .addCase(postColumnPrayer.pending, state => {
-        state.getPrayersStatus = 'pending';
-      })
-      .addCase(postColumnPrayer.fulfilled, state => {
-        state.getPrayersStatus = 'fulfilled';
-      })
-      .addCase(postColumnPrayer.rejected, state => {
-        state.getPrayersStatus = 'rejected';
-      });
   },
 );
 
 export const actions = {
   getColumns,
-  postColumnPrayer,
 };
 
 export const selectors = {

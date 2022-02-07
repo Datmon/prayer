@@ -10,6 +10,7 @@ import { Field, Form } from 'react-final-form';
 import { composeValidators, minLength, required } from 'utils/validation';
 import Input from 'components/Input';
 import SwipeableCard from 'components/SwipeableCard';
+import { Prayers } from 'types/interfaces';
 
 const MyPrayers = ({
   navigation,
@@ -29,9 +30,8 @@ const MyPrayers = ({
   };
 
   const postPrayer = async (data: { prayerTitle: string }) => {
-    setIsLoading(true);
     const res: any = await dispatch(
-      actions.columns.postColumnPrayer({
+      actions.prayers.postPrayer({
         columnId: route.params.columnId,
         body: { title: data.prayerTitle, checked: false, description: '' },
       }),
@@ -39,8 +39,6 @@ const MyPrayers = ({
     if (res.payload.message) {
       Alert.alert('Error', res.payload.message, [{ text: 'Ok' }]);
     }
-    getPrayers();
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -89,7 +87,12 @@ const MyPrayers = ({
       {isLoading ? (
         <Text>Is loading</Text>
       ) : (
-        prayers.map(data => <SwipeableCard data={data} />)
+        prayers &&
+        prayers
+          .filter(card => card.columnId === route.params.columnId)
+          .map(data => (
+            <SwipeableCard key={data.id} data={data} getPrayers={getPrayers} />
+          ))
       )}
       <Button title="Get preayers" onPress={() => getPrayers()} />
     </View>

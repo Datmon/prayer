@@ -4,7 +4,19 @@ import React from 'react';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { Prayers } from 'types/interfaces';
 
-const SwipeableCard = ({ data }: { data: Prayers }) => {
+import { useDispatch } from 'react-redux';
+import { actions } from 'store';
+
+import Checkbox from './components/Checkbox';
+
+const SwipeableCard = ({
+  data,
+  getPrayers,
+}: {
+  data: Prayers;
+  getPrayers: () => void;
+}) => {
+  const dispatch = useDispatch();
   const rightSwipeActions = () => {
     return (
       <View
@@ -26,8 +38,12 @@ const SwipeableCard = ({ data }: { data: Prayers }) => {
     );
   };
 
-  const swipeFromRightOpen = () => {
-    Alert.alert('Swipe from right');
+  const swipeFromRightOpen = async () => {
+    const res: any = await dispatch(actions.prayers.deletePrayer(data.id));
+    if (res.payload.message) {
+      Alert.alert('Error', res.payload.message, [{ text: 'Ok' }]);
+    }
+    //getPrayers();
   };
 
   return (
@@ -35,6 +51,11 @@ const SwipeableCard = ({ data }: { data: Prayers }) => {
       renderRightActions={rightSwipeActions}
       onSwipeableRightOpen={swipeFromRightOpen}>
       <View style={styles.card}>
+        <Checkbox
+          checked={data.checked}
+          onPress={() => {}}
+          style={styles.checkbox}
+        />
         <Text>{data.title}</Text>
       </View>
     </Swipeable>
@@ -45,8 +66,14 @@ export default SwipeableCard;
 
 const styles = StyleSheet.create({
   card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 10,
     paddingHorizontal: 30,
     paddingVertical: 20,
     backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderColor: '#E5E5E5',
   },
+  checkbox: { marginBottom: 2, marginRight: 10 },
 });
