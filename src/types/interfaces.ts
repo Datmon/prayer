@@ -11,3 +11,9 @@ export interface Prayers {
   id: number;
   title: string;
 }
+
+export interface DataPrayer {
+  title: string;
+  description: string;
+  checked: boolean;
+}

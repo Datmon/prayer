@@ -19,6 +19,7 @@ const MyPrayers = ({
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [showChecked, setShowChecked] = useState(false);
 
   const prayers = useSelector(selectors.prayers.selectPrayers);
 
@@ -90,11 +91,33 @@ const MyPrayers = ({
         prayers &&
         prayers
           .filter(card => card.columnId === route.params.columnId)
+          .filter(card => card.checked === false)
           .map(data => (
-            <SwipeableCard key={data.id} data={data} getPrayers={getPrayers} />
+            <SwipeableCard
+              key={data.id}
+              data={data}
+              getPrayers={getPrayers}
+              navigation={navigation}
+            />
           ))
       )}
-      <Button title="Get preayers" onPress={() => getPrayers()} />
+      <Button
+        title="SHOW ANSVERED PRAYERS"
+        onPress={() => setShowChecked(!showChecked)}
+      />
+      {showChecked &&
+        prayers &&
+        prayers
+          .filter(card => card.columnId === route.params.columnId)
+          .filter(card => card.checked === true)
+          .map(data => (
+            <SwipeableCard
+              key={data.id}
+              data={data}
+              getPrayers={getPrayers}
+              navigation={navigation}
+            />
+          ))}
     </View>
   );
 };

@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { Prayers } from 'types/interfaces';
@@ -12,11 +12,22 @@ import Checkbox from './components/Checkbox';
 const SwipeableCard = ({
   data,
   getPrayers,
+  navigation,
 }: {
   data: Prayers;
   getPrayers: () => void;
+  navigation: any;
 }) => {
   const dispatch = useDispatch();
+  const checkPrayer = async (prayerId: number) => {
+    const res: any = await dispatch(
+      actions.prayers.checkPrayer({ prayerId: data.id, body: data }),
+    );
+    if (res.payload.message) {
+      Alert.alert('Error', res.payload.message, [{ text: 'Ok' }]);
+    }
+  };
+
   const rightSwipeActions = () => {
     return (
       <View
@@ -53,10 +64,16 @@ const SwipeableCard = ({
       <View style={styles.card}>
         <Checkbox
           checked={data.checked}
-          onPress={() => {}}
+          onPress={() => checkPrayer(data.id)}
           style={styles.checkbox}
         />
-        <Text>{data.title}</Text>
+        <TouchableOpacity
+          style={styles.touchable}
+          onPress={() => navigation.navigate('Details', { ...data })}>
+          <Text style={data.checked && { textDecorationLine: 'line-through' }}>
+            {data.title}
+          </Text>
+        </TouchableOpacity>
       </View>
     </Swipeable>
   );
@@ -76,4 +93,10 @@ const styles = StyleSheet.create({
     borderColor: '#E5E5E5',
   },
   checkbox: { marginBottom: 2, marginRight: 10 },
+  touchable: {
+    height: '100%',
+    width: '100%',
+    alignContent: 'center',
+    paddingTop: 2,
+  },
 });

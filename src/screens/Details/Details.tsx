@@ -1,10 +1,15 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from 'types';
 
-const Details = () => {
+const Details = ({
+  navigation,
+  route,
+}: NativeStackScreenProps<RootStackParamList, 'Details'>) => {
   return (
     <View>
-      <Text>Details</Text>
+      <Text>{route.params.title}</Text>
     </View>
   );
 };

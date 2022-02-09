@@ -1,4 +1,11 @@
-import { Alert, Button, StyleSheet, Text } from 'react-native';
+import {
+  Alert,
+  Button,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -128,24 +135,23 @@ const Navigation = () => {
         <HomeStack.Screen
           name="Details"
           component={Details}
-          options={{
+          options={({ route }: any) => ({
+            title: route.params.title,
             headerStyle: {
               backgroundColor: '#BFB393',
               paddingHorizontal: 15,
             },
             headerRight: () => (
-              <Button
-                onPress={() => Alert.alert('This is a button!')}
-                title="Info"
-                color="white"
-              />
+              <TouchableOpacity onPress={() => Alert.alert('pray')}>
+                <Image source={require('../assests/img/prayIcon.png')} />
+              </TouchableOpacity>
             ),
             headerBackTitle: ' ',
             headerTitleStyle: {
               color: 'white',
               fontSize: 17,
             },
-          }}
+          })}
         />
       </HomeStack.Navigator>
     </NavigationContainer>

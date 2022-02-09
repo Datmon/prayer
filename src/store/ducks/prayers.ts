@@ -6,7 +6,7 @@ import {
 import { RootState } from '..';
 import { prayers } from '../../api';
 import { StorageService } from 'services';
-import { Colums, Prayers } from 'types/interfaces';
+import { Prayers } from 'types/interfaces';
 
 const getPrayers = createAsyncThunk('columns/getPrayers', async () => {
   try {
@@ -22,7 +22,7 @@ const getPrayers = createAsyncThunk('columns/getPrayers', async () => {
 });
 
 const postPrayer = createAsyncThunk(
-  'column/postPrayer',
+  'prayers/postPrayer',
   async ({
     columnId,
     body,
@@ -48,7 +48,7 @@ const postPrayer = createAsyncThunk(
 );
 
 const deletePrayer = createAsyncThunk(
-  'columns/deletePrayer',
+  'prayers/deletePrayer',
   async (prayerId: number) => {
     try {
       const response = await prayers.deletePrayer(prayerId);
@@ -64,12 +64,42 @@ const deletePrayer = createAsyncThunk(
   },
 );
 
+const checkPrayer = createAsyncThunk(
+  'prayers/checkPrayer',
+  async ({
+    prayerId,
+    body,
+  }: {
+    prayerId: number;
+    body: {
+      title: string;
+      checked: boolean;
+      description: string;
+    };
+  }) => {
+    try {
+      const response = await prayers.updatePrayer(prayerId, {
+        ...body,
+        checked: !body.checked,
+      });
+      if (response.data.message) {
+        throw new Error(response.data.message);
+      }
+      console.log('updatePrayer', response.data);
+      return response.data;
+    } catch (err) {
+      return err;
+    }
+  },
+);
+
 export const reducer = createReducer(
   {
     prayers: [] as Array<Prayers>,
     getPrayersStatus: 'idle',
     postPrayersStatus: 'idle',
     deletePrayerStatus: 'idle',
+    updatePrayerStatus: 'idle',
   },
   builder => {
     builder
@@ -110,6 +140,22 @@ export const reducer = createReducer(
       .addCase(deletePrayer.rejected, state => {
         state.deletePrayerStatus = 'rejected';
       });
+
+    builder
+      .addCase(checkPrayer.pending, state => {
+        state.updatePrayerStatus = 'pending';
+      })
+      .addCase(checkPrayer.fulfilled, (state, action) => {
+        state.prayers = state.prayers.map(prayer =>
+          prayer.id === action.payload.id
+            ? { ...action.payload, checked: action.payload.checked }
+            : prayer,
+        );
+        state.updatePrayerStatus = 'fulfilled';
+      })
+      .addCase(checkPrayer.rejected, state => {
+        state.updatePrayerStatus = 'rejected';
+      });
   },
 );
 
@@ -117,6 +163,7 @@ export const actions = {
   getPrayers,
   postPrayer,
   deletePrayer,
+  checkPrayer,
 };
 
 export const selectors = {
