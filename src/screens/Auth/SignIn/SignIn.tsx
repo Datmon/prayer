@@ -25,12 +25,16 @@ const SignIn = ({
       actions.auth.signIn({ email: data.email, password: data.password }),
     );
     if (res.payload.message) {
-      Alert.alert('Error', res.payload.message, [{ text: 'Ok' }]);
+      Alert.alert('Error sign in', res.payload.message, [{ text: 'Ok' }]);
     }
   };
 
   const temoraryAuth = async () => {
-    await dispatch(actions.auth.setAccessToken('temporary'));
+    await dispatch(
+      actions.auth.setAccessToken(
+        'e6c4352d32a114eda6ea2df0bbeda9fce04c0f7d4f4a38d8be81c82796b91663',
+      ),
+    );
   };
 
   return (

@@ -9,7 +9,7 @@ const Subscribed = ({
   return (
     <View>
       <Text>Subscribed</Text>
-      <Button title="Click" onPress={() => navigation.navigate('Details')} />
+      <Button title="Click" onPress={() => navigation.goBack()} />
     </View>
   );
 };

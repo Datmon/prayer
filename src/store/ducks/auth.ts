@@ -6,6 +6,7 @@ import {
 import { RootState } from '..';
 import { auth } from '../../api';
 import { StorageService } from 'services';
+import axios from 'axios';
 
 const setAccessToken = createAction<string>('auth/setAccessToken');
 
@@ -55,6 +56,15 @@ export const reducer = createReducer(
       })
       .addCase(signIn.fulfilled, (state, action) => {
         state.user = action.payload;
+        if (action.payload.token) {
+          axios.defaults.headers.common.Authorization =
+            'Bearer ' + action.payload.token;
+        } else {
+          axios.defaults.headers.common.Authorization = false;
+          /*if setting null does not remove `Authorization` header then try
+              delete axios.defaults.headers.common['Authorization'];
+            */
+        }
         state.signingInStatus = 'fulfilled';
       })
       .addCase(signIn.rejected, state => {

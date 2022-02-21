@@ -9,7 +9,7 @@ import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { Field, Form } from 'react-final-form';
 import { composeValidators, minLength, required } from 'utils/validation';
 import Input from 'components/Input';
-import SwipeableCard from 'components/SwipeableCard';
+import SwipeableCard from 'screens/MyPrayers/SwipeableCard';
 import { Prayers } from 'types/interfaces';
 
 const MyPrayers = ({
@@ -19,9 +19,10 @@ const MyPrayers = ({
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [showChecked, setShowChecked] = useState(false);
+  const [showChecked, setShowChecked] = useState(true);
 
   const prayers = useSelector(selectors.prayers.selectPrayers);
+  const accessToken = useSelector(selectors.auth.selectAccessToken);
 
   const getPrayers = async () => {
     setIsLoading(true);
@@ -44,7 +45,7 @@ const MyPrayers = ({
 
   useEffect(() => {
     getPrayers();
-  }, []);
+  }, [accessToken]);
 
   return (
     <View>
@@ -73,9 +74,9 @@ const MyPrayers = ({
                   <Input
                     meta={meta}
                     input={input}
-                    placeholder="Email"
-                    autoComplete="email"
-                    textContentType="emailAddress"
+                    placeholder="Add a prayer"
+                    autoComplete="off"
+                    textContentType="none"
                     secureTextEntry={false}
                     style={styles.input}
                   />
@@ -101,10 +102,13 @@ const MyPrayers = ({
             />
           ))
       )}
-      <Button
-        title="SHOW ANSVERED PRAYERS"
-        onPress={() => setShowChecked(!showChecked)}
-      />
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => setShowChecked(!showChecked)}>
+        <Text style={{ color: 'white', fontSize: 12 }}>
+          {!showChecked ? 'SHOW ANSVERED PRAYERS' : 'HIDE ANSVERED PRAYERS'}
+        </Text>
+      </TouchableOpacity>
       {showChecked &&
         prayers &&
         prayers
@@ -145,5 +149,15 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
     fontSize: 17,
+  },
+  button: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 15,
+    backgroundColor: '#BFB393',
+    borderRadius: 50,
+    height: 30,
+    width: 209,
   },
 });

@@ -5,8 +5,9 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import MyDesk from './MyDesk';
@@ -25,6 +26,7 @@ import { StorageService } from 'services';
 import axios from 'axios';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from 'types';
+import { columns } from 'api';
 
 const TaskStack = createMaterialTopTabNavigator();
 
@@ -35,6 +37,8 @@ const Navigation = () => {
   const accessToken = useSelector(selectors.auth.selectAccessToken);
   console.log('accessToken', accessToken);
 
+  const [columnTitle, setColumnTitle] = useState('');
+
   const signOut = async () => {
     const res = await dispatch(actions.auth.signOut());
   };
@@ -42,22 +46,29 @@ const Navigation = () => {
   const getToken = async () => {
     const token = await StorageService.getAssessToken();
     if (token) {
-      axios.defaults.headers.common.Authorization = 'Bearer ' + token;
-    } else {
-      axios.defaults.headers.common.Authorization = false;
-      /*if setting null does not remove `Authorization` header then try
-          delete axios.defaults.headers.common['Authorization'];
-        */
-    }
-    if (token) {
-      dispatch(actions.auth.setAccessToken(token));
+      await dispatch(actions.auth.setAccessToken(token));
     }
     console.log('getToken: ', token);
   };
 
+  const addColumn = async (value: string) => {
+    const res = await columns.addColumn(value);
+    getColumns();
+  };
+
+  const deleteColumn = async (value: string) => {
+    const res = await columns.deleteColumn(value);
+    getColumns();
+  };
+
+  const getColumns = async () => {
+    const res = await dispatch(actions.columns.getColumns());
+    console.log('getting columns', res);
+  };
+
   useEffect(() => {
     getToken();
-  }, []);
+  }, [accessToken]);
 
   const Main = ({
     route,
@@ -117,6 +128,16 @@ const Navigation = () => {
                 <Text>Sign out</Text>
               </TopBarButton>
             ),
+            headerRight: () => (
+              <TopBarButton
+                onPress={() =>
+                  Alert.prompt('Adding', 'Please enter column name', value =>
+                    addColumn(value),
+                  )
+                }>
+                <Image source={require('../assests/img/plusMain.png')} />
+              </TopBarButton>
+            ),
           }}
         />
         <HomeStack.Screen
@@ -126,7 +147,7 @@ const Navigation = () => {
             title: route.params.title,
             headerBackTitle: ' ',
             headerRight: () => (
-              <TopBarButton onPress={() => Alert.alert('Settings')}>
+              <TopBarButton onPress={() => deleteColumn(route.params.columnId)}>
                 <Settings />
               </TopBarButton>
             ),
@@ -135,23 +156,9 @@ const Navigation = () => {
         <HomeStack.Screen
           name="Details"
           component={Details}
-          options={({ route }: any) => ({
-            title: route.params.title,
-            headerStyle: {
-              backgroundColor: '#BFB393',
-              paddingHorizontal: 15,
-            },
-            headerRight: () => (
-              <TouchableOpacity onPress={() => Alert.alert('pray')}>
-                <Image source={require('../assests/img/prayIcon.png')} />
-              </TouchableOpacity>
-            ),
-            headerBackTitle: ' ',
-            headerTitleStyle: {
-              color: 'white',
-              fontSize: 17,
-            },
-          })}
+          options={{
+            headerShown: false,
+          }}
         />
       </HomeStack.Navigator>
     </NavigationContainer>

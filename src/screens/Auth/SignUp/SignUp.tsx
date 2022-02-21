@@ -13,6 +13,7 @@ import {
 } from '../../../utils/validation';
 import { auth } from '../../../api';
 import ClickableText from '../../../components/ClickableText/ClickableText';
+import { actions } from 'store';
 
 const SignIn = ({
   navigation,
@@ -27,8 +28,13 @@ const SignIn = ({
     console.log('data: ', data);
     if (data.email && data.password && data.name) {
       const res: any = await auth.signUp(data.name, data.email, data.password);
-      if (res.data) {
-        //Alert.alert('Error', res.data, [{ text: 'Ok' }]);
+      console.log('res', res);
+      if (res.data.message) {
+        Alert.alert('Error sign up', res.data.message, [{ text: 'Ok' }]);
+      } else {
+        await dispatch(
+          actions.auth.signIn({ email: data.email, password: data.password }),
+        );
       }
     }
   };
@@ -86,7 +92,7 @@ const SignIn = ({
         )}
       />
       <ClickableText
-        text="Move to sign up"
+        text="Move to sign in"
         onPress={() => navigation.navigate('SignIn')}
       />
     </SafeAreaView>

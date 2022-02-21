@@ -17,3 +17,11 @@ export interface DataPrayer {
   description: string;
   checked: boolean;
 }
+
+export interface Comments {
+  body: string;
+  created: Date;
+  id: number;
+  prayerId: number;
+  userId: number;
+}
